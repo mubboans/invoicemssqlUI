@@ -1,0 +1,13 @@
+:host::ng-deep{
+    @media screen and (min-width:1024px) {
+      .p-menubar-root-list {
+        align-items: center;
+        display: flex;
+        position: absolute;
+        top: 10px;
+        /* left: 30%; */
+        right: 15%;
+    }   
+    }
+   
+}

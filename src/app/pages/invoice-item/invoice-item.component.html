@@ -1,0 +1,134 @@
+<div class="card">
+    <!-- <p-dataView #dv [value]="invoiceitemArray" [paginator]="true" [rows]="9" filterBy="name"
+        [sortField]="sortField" [sortOrder]="sortOrder" layout="grid">
+        <ng-template pTemplate="header">
+            <div class="flex flex-row justify-content-between">
+                <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Sort By Price" (onChange)="onSortChange($event)" styleClass="p-mb-2 p-mb-md-0"></p-dropdown>
+                <span class="p-input-icon-left p-mb-2 p-mb-md-0">
+                    <i class="pi pi-search"></i>
+                    <input type="search" pInputText placeholder="Search by Name" (input)="dv.filter($event.target.value)">
+                </span>
+                <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+            </div>
+        </ng-template>
+        <ng-template let-product pTemplate="listItem">
+            <div class="col-12">
+                <div class="product-list-item">
+                    
+                    <div class="product-list-detail">
+                        <div class="product-name">{{product.name}}</div>
+                        
+                        
+                        <i class="pi pi-tag product-category-icon"></i><span class="product-category">{{product.category}}</span>
+                    </div>
+                    
+                    <div class="product-list-action">
+                        <span class="product-price">₹{{product.itemprice}}</span>
+                        <p-button icon="pi pi-shopping-cart" label="Add to Cart"></p-button>
+                        <span [class]="'product-badge status-' + product.inventoryStatus.toLowerCase()">{{product.inventoryStatus}}</span>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template let-product pTemplate="gridItem">
+            <div class="col-12 md:col-4">
+                <div class="product-grid-item card">
+                    <div class="product-grid-item-top">
+                        <div>
+                            <i class="pi pi-tag product-category-icon"></i>
+                            <span class="product-category">{{product.category}}</span>
+                        </div>
+                        <span [class]="'product-badge status-' + product.inventoryStatus.toLowerCase()">{{product.inventoryStatus}}</span>
+                    </div>
+                    <div class="product-grid-item-content">
+                     
+                        <div class="product-name">{{product.name}}</div>
+                        
+                       
+                    </div>
+                    <div class="product-grid-item-bottom">
+                        <span class="product-price">₹{{product.itemprice}}</span>
+                        <p-button icon="pi pi-shopping-cart" [disabled]="product.inventoryStatus === 'OUTOFSTOCK'"></p-button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-dataView> -->
+    <p-orderList [value]="invoiceitemArray" [listStyle]="{'max-height':'30rem'}"  filterBy="name" filterPlaceholder="Filter by name" [dragdrop]="true">
+        <ng-template let-product pTemplate="header">
+            <div class="flex justify-content-between align-items-center">
+                <h4>List of Invoice Item</h4>
+                <p-button icon="pi pi-plus" (click)="addItem()" label="Add"></p-button>
+            </div>
+            </ng-template>
+        <ng-template let-product pTemplate="item">
+            <div class="product-item">
+                <div class="product-list-detail">
+                    <h2 class="mb-2">{{product.name}}</h2>
+                    <i class="pi pi-tag product-category-icon"></i>
+                    <span class="product-category">{{product.category}}</span>
+                </div>
+                <div class="product-list-detail">
+                    <h4 class="mb-2">₹{{product.itemprice}}</h4>
+                    <span [class]="'product-badge status-' + product.inventoryStatus.toLowerCase()">{{product.inventoryStatus}}</span>
+               </div>
+
+                <div class="flex justify-content-between align-items-center">
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editItem(product)"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteItem(product)"></button>
+               
+                 </div>
+            </div>
+        </ng-template>
+    </p-orderList>
+
+    <p-dialog [(visible)]="itemDialog" [style]="{width: '450px'}" header="Invoice Item Details" [modal]="true" styleClass="p-fluid">
+       
+        <form #itemform="ngForm" class="form" (ngSubmit)="fnSubmit()">
+
+
+                <div class="col-12 md:col-8 m-auto">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+                        <input name="name" type="text" pInputText [(ngModel)]="invoiceItemObject.name" placeholder="Item Name">         
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-8 m-auto">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon"><i class="pi pi-money-bill"></i></span>
+                        <input  name="price" type="number" pInputText [(ngModel)]="invoiceItemObject.itemprice" placeholder="Price">         
+                    </div>
+                </div>
+
+
+                <div class="col-12 md:col-8 m-auto">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon"><i class="pi pi-tags"></i></span>
+                        <input  name="category" type="text" pInputText [(ngModel)]="invoiceItemObject.category" placeholder="Category">         
+                    </div>
+                </div>
+                <div class="col-12 md:col-8 m-auto">
+                    <div class="p-inputgroup">
+                        <span class="p-inputgroup-addon"><i class="pi pi-mobile"></i></span>
+                        <input  name="status" type="text" pInputText [(ngModel)]="invoiceItemObject.inventoryStatus" placeholder="Inventory Status">         
+                    </div>
+                </div>
+                
+
+                <div class="col-12 md:col-3 m-auto">
+                    <div class="p-inputgroup">
+                        <button pButton pRipple label="Save" icon="pi pi-check" [disabled]="itemform.invalid" class="p-button-warning p-button-outlined" type="submit"></button>
+                    </div>
+                </div>
+           
+            
+        </form>
+ 
+
+</p-dialog>
+
+    <p-toast position="bottom-right" [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}"></p-toast>
+    <p-confirmDialog header="Delete Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog> 
+
+</div>
