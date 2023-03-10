@@ -1,11 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng-lts/api';
 import { Invoice } from 'src/app/model/invoice';
 import { CustomerService } from 'src/app/services/customer.service';
 import { InvoiceItemService } from 'src/app/services/invoice-item.service';
 import { InvoiceService } from 'src/app/services/invoice.service';
-
+import * as pdfMake from "pdfmake/build/pdfmake";
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
+(pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
+import htmlToPdfmake from "html-to-pdfmake"
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 @Component({
   selector: 'app-invoice',
   templateUrl: './invoice.component.html',
@@ -22,6 +28,10 @@ export class InvoiceComponent implements OnInit {
   itemArr:any[];
   deleteId:any[];
   loading:boolean= true;
+  filteredData:any[];
+  invoicepdf:boolean=false;
+  invoicecontent:any;
+  @ViewChild('invoiceId') invoiceId: ElementRef;
   constructor(private messageService: MessageService,public confirmationService: ConfirmationService,public invoiceitemser:InvoiceItemService,public fb:FormBuilder,public invoiceService:InvoiceService,public customerser:CustomerService) { 
     // this.invoiceGroup=fb.group({
     //      _id:fb.control(''),
@@ -104,12 +114,13 @@ export class InvoiceComponent implements OnInit {
       __v:product.__v,
       totalamount:product.totalamount,
       createdOn:product.createdOn,
-      invoicedate:product.invoicedate,
+      invoicedate:new Date(product.invoicedate),
       invoiceno:product.invoiceno,
-      customerId:product.customerId,
+      customerId:this.mapCustomerwithid(product.customerId),
    
     })
-    this.invoiceitem.clear()
+    this.invoiceitem.clear();
+
     for (let i of product.item) {
       if(i){
         
@@ -120,6 +131,88 @@ export class InvoiceComponent implements OnInit {
     // this.invoiceGroup.patchValue({item:product.item},)
     console.log(this.invoiceGroup.value,'patched');
   } 
+  
+  downloadPdf(obj){ 
+    let PDF = new jsPDF('p', 'mm', 'a4');
+    this.invoicepdf=true;
+    this.invoiceService.getInvoicePdfbyNo(obj.invoiceno).subscribe((x:any)=>{
+      
+      this.invoicecontent = x;
+      
+      this.invoiceId.nativeElement.innerHTML =this.invoicecontent;
+      let DATA: any = document.getElementById('invoiceId');
+        // PDF.html(DATA).then(x=>{PDF.save('invoice-generated.pdf')})
+   
+      html2canvas(DATA).then((canvas) => {
+        console.log(canvas);
+        
+        let fileWidth = 208;
+        let fileHeight = (canvas.height * fileWidth) / canvas.width;
+        const FILEURI = canvas.toDataURL('image/png');
+       
+        let position = 0;
+        // console.log(FILEURI,'file');
+        
+        PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight);
+        // PDF.text("hello",position, fileWidth,);
+        if(canvas){
+          setTimeout(() =>{
+            PDF.save('invoice-generated.pdf');
+            // pdfMake.createPdf(documentDefinition).open();  
+          },5000)
+        
+      };
+      const pdfTable = this.invoiceId.nativeElement;
+      
+      // var html = htmlToPdfmake(pdfTable.innerHTML,{
+      //   defaultStyles:{ // change the default styles
+      //     table:{ // for <A>
+      //       width:100,
+      //       color:'purple', // all links should be 'purple'
+      //       decoration:'' ,
+      //       th:{
+      //         width: 200
+      //       }
+      //       // remove underline
+      //     },
+          
+      //     li:'' // remove all default styles for <LI>
+      //   }
+      // });
+      // table, td, th {
+      //   border: 1px solid black;
+      // }
+      
+      // table {
+      //   border-collapse: collapse;
+      //   width: 100%;
+      // }
+      
+      // th {
+      //   height: 70px;
+      // }
+      // const documentDefinition = { content: html,};
+   
+    
+    });
+    })    
+  }
+  filterCountry(event) {
+    //in a real application, make a request to a remote url with the query and return filtered results, for demo we filter at client side
+    let filtered : any[] = [];
+    let query = event.query;
+
+    for(let i = 0; i < this.custArray.length; i++) {
+        let cdata = this.custArray[i];
+        if (cdata.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
+          console.log(cdata,'customer data');
+            
+          filtered.push(cdata);
+        }
+    }
+
+    this.filteredData = filtered;
+}
   selectRow(checkValue) {
     if (checkValue) {
       this.deleteId = this.invoiceArr.map(value => value._id);
@@ -207,6 +300,33 @@ addItem(){
     this.invoiceDialog=true;
     this.invoiceitem.push(this.createItem())
   }
+  getPdf(obj){
+    
+    this.invoicepdf=true;
+    console.log(obj.invoiceno,obj,'pdf');
+
+    this.invoiceService.getInvoicePdfbyNo(obj.invoiceno).subscribe((x:any)=>{
+     
+       
+      // window.open('', "_blank");
+      this.invoicecontent = x;
+      console.log(typeof x,'html response');
+      this.invoiceId.nativeElement.innerHTML =this.invoicecontent;
+      console.log(this.invoicecontent);
+      
+    })
+  }
+  mapCustomerwithid(ids){
+    const d= this.custArray.filter((x,value)=>{
+      console.log(x,value);
+      
+      if(x.id == ids){
+        return value
+
+      }
+    })  
+    return d[0];
+  }
   fnSubmit(){
     this.submitted=true;
     const itemarray = this.invoiceGroup.get('item').value
@@ -214,7 +334,11 @@ addItem(){
       const d = {invoice_itemId:x.invoice_itemId,quantity:x.quantity}
       return d;
     })
-
+    const d=this.invoiceGroup.get('customerId').value
+    console.log(d);
+     this.invoiceGroup.patchValue({
+       customerId:d.id
+     })
     let invoiceData = {
       customerId:this.invoiceGroup.get('customerId').value,
       item:items,
@@ -228,6 +352,8 @@ addItem(){
      this.invoiceGroup.removeControl('_id');
      this.invoiceGroup.removeControl('custdata');
      this.invoiceGroup.removeControl('totalamount')
+      console.log(this.invoiceGroup.value);
+      
     this.invoiceService.updateInvoice(id,this.invoiceGroup.value).subscribe((x)=>{
       if(x.succes){
         this.messageService.add({severity:'custom', summary: 'Successful', detail: 'Invoice Updated', life: 3000});
@@ -238,7 +364,6 @@ addItem(){
     else{
       this.invoiceService.postInvoice(invoiceData).subscribe((x:any)=>{
         console.log(x,'data');
-        
         if(x.succes){
           this.messageService.add({severity:'success', summary: 'Successful', detail: 'Invoice Created', life: 3000});
           this.getinvoice();

@@ -61,7 +61,17 @@ let data={
   )
 }
  
-
+getInvoicePdfbyNo(no):Observable<any>{
+  return this.http.get(`${environment.serverUrl}invoice/pdf:${no}`, { responseType: 'text' }).pipe(
+    map((x:any)=>{
+      console.log(x);
+      return x;
+     
+      
+    }),
+    catchError(this.handleError)
+  )
+} 
   handleError(httperror?:HttpErrorResponse){
     return throwError(httperror.message || "Error In Message")
   }

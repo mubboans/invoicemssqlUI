@@ -53,6 +53,9 @@
                 </td>
                 <td>{{product.totalamount}}</td>
                 <td>
+                     
+                    <button pButton pRipple icon="pi pi-download" class="p-button-rounded p-button-help p-mr-2" (click)="downloadPdf(product)"></button>
+                    <button pButton pRipple icon="pi pi-file-pdf" class="p-button-rounded p-button-danger p-mr-2" (click)="getPdf(product)"></button>
                     <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editInvoice(product)"></button>
                     <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteInvoice(product)"></button>
                 </td>
@@ -71,9 +74,18 @@
     
         <div class="p-field mb-4 mt-2">
             <label for="name" class="mb-2">Customare Name</label>
-            <p-dropdown [options]="custArray" placeholder="Select Customer" formControlName="customerId" optionLabel="name" optionValue="id"></p-dropdown>
+            <p-autoComplete placeholder="Select Customer" formControlName="customerId" [suggestions]="filteredData"
+  (completeMethod)="filterCountry($event)" field="name">
+  <ng-template let-country pTemplate="item">
+    <div class="country-item">
+      <div>{{country.name}}</div>
+    </div>
+  </ng-template>
+</p-autoComplete>
+
+            <!-- <p-dropdown [options]="custArray" placeholder="Select Customer" formControlName="customerId" optionLabel="name" optionValue="id"></p-dropdown> -->
         </div>
-        <div class="p-fluid p-formgrid grid">
+        <div class="p-fluid p-form-grid grid">
             <div class="p-field col-12 md:col-6">
                 <label for="date">Invoice Date</label>
                 <p-calendar appendTo="body" [touchUI]="true" [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" formControlName="invoicedate" dateFormat="dd.mm.yy"></p-calendar>
@@ -163,7 +175,7 @@
     <div class="p-field">
         <div class="flex align-items-center  justify-content-between">
             <div>
-                <button type="button" pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text p-button-raised"></button>
+                <button type="button" pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text p-button-raised" (click)="invoiceDialog = false"></button>
             </div>
             <div>
                 <button type="submit" pButton pRipple label="Save" icon="pi pi-check" class="p-button-text p-button-raised" (click)="fnSubmit()"></button>
@@ -173,6 +185,11 @@
         </div>
         </div>
 </form>
+</p-dialog>
+<p-dialog [(visible)]="invoicepdf" [modal]="true" [breakpoints]="{'1000px': '75vw', '640px': '100vw'}" [style]="{width: '90vw'}">
+   <div id="invoiceId" #invoiceId> 
+    
+   </div>
 </p-dialog>
 <p-toast position="bottom-right" [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}"></p-toast>
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog> 

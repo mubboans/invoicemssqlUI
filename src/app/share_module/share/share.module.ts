@@ -47,10 +47,11 @@ import { AppRoutingModule } from 'src/app/app-routing.module';
 import { ConfirmationService, MessageService } from 'primeng-lts/api';
 import {PasswordModule} from 'primeng-lts/password';
 import {OrderListModule} from 'primeng-lts/orderlist';
-
+import {AutoCompleteModule} from 'primeng-lts/autocomplete';
 @NgModule({
   declarations: [],
   imports: [
+    AutoCompleteModule,
     CommonModule,
     PasswordModule,
     OrderListModule,
@@ -108,6 +109,7 @@ import {OrderListModule} from 'primeng-lts/orderlist';
     AccordionModule,
   ],
   exports:[
+    AutoCompleteModule,
     CommonModule,
     OrderListModule,
     TableModule,
