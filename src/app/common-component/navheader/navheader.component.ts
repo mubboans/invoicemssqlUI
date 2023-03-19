@@ -16,27 +16,27 @@ export class NavheaderComponent implements OnInit {
       {
           label:'Customer',
           icon:'pi pi-fw pi-user',
-          url:'customer'
+          url:'#/customer'
       },
       {
           label:'Invoice Item',
           icon:'pi pi-fw pi-file',
-          url:'invoice-item'
+          url:'#/invoice-item'
       },
       {
           label:'Invoice',
           icon:'pi pi-fw pi-calendar',
-          url:'invoice'
+          url:'#/invoice'
       },
       {
           label:'About',
           icon:'pi pi-fw pi-info-circle',
-          url:'about'
+          url:'#/about'
       },
       {
         label:'Dashboard',
         icon:"pi pi-fw pi-chart-bar",
-        url:'dashboard'
+        url:'#/dashboard'
       }
   ];
 }

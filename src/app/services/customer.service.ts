@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { map,catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -42,6 +42,15 @@ export class CustomerService {
     )
   }
 
+   uploadCustomerCSV(file):Observable<any>{
+    return this.http.post<any>(`${environment.serverUrl}customer/multiupload`,file).pipe(
+      map(x=>{
+        return x;
+      }),
+      catchError(this.handleError)
+    )
+   }
+
   deletCustomerbyId(id):Observable<any>{
     return this.http.delete<any>(`${environment.serverUrl}customer:${id}`).pipe(
       map((x)=>{
@@ -51,7 +60,7 @@ export class CustomerService {
   }
   
   handleError(error?:HttpErrorResponse) {
-    return Observable.throw(error.message || "Server Errors")
+    return throwError(error.message || "Server Errors")
    
   }
 }

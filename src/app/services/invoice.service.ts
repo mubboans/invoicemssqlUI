@@ -19,8 +19,9 @@ getInvoice():Observable<any>{
     catchError(this.handleError)
   )
 }
+
 getInvoicebyNO(no):Observable<any>{
-  return this.http.get<any>(`${environment.serverUrl}invoice:${no}`).pipe(
+  return this.http.get<any>(`${environment.serverUrl}invoices:${no}`).pipe(
     map(x=>{
       return x;
     }),
@@ -72,6 +73,13 @@ getInvoicePdfbyNo(no):Observable<any>{
     catchError(this.handleError)
   )
 } 
+getInvoiceReadablePDF(no):Observable<any>{
+  return this.http.get(`${environment.serverUrl}invoice/${no}/pdf`,{responseType:'blob'}).pipe(
+    map(x=>{
+      return x
+    }),catchError(this.handleError)
+  )
+}
   handleError(httperror?:HttpErrorResponse){
     return throwError(httperror.message || "Error In Message")
   }

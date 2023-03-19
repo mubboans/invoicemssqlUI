@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -45,6 +45,6 @@ export class InvoiceItemService {
     )
   }
   handleError(httpError?: HttpErrorResponse){
-    return Observable.throw(httpError.message || "Server Error")
+    return throwError(httpError.message || "Server Error")
   }
 }

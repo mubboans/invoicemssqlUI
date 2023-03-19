@@ -1,5 +1,5 @@
 <div class="card">
-    <p-toolbar styleClass="p-mb-4">
+    <!-- <p-toolbar styleClass="p-mb-4">
         <ng-template pTemplate="left">
             <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
             
@@ -8,19 +8,29 @@
         <ng-template pTemplate="right">
             <button pButton pRipple [label]="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!deleteId || !deleteId.length"></button>
         </ng-template>
-    </p-toolbar>
-
+    </p-toolbar> -->
+   
     <p-table styleClass="p-datatable-responsive-demo" [loading]="loading" #dt [value]="invoiceArr" [rows]="10" [paginator]="true" [globalFilterFields]="['custdata.name','invoiceno','createdOn','totalamount']"
          [rowHover]="true" dataKey="_id" [(selection)]="deleteId"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
         <ng-template pTemplate="caption">
-            <div class="flex align-items-center justify-content-between">
+            <div class="flex align-items-center justify-content-between mb-3">
                 <h3 class="m-0">Invoice Data</h3>
                 <span class="p-input-icon-left">
                     <i class="pi pi-search"></i>
                     <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
                 </span>
             </div>
+            <p-toolbar styleClass="p-mb-4 p-mt-2">
+                <ng-template pTemplate="left">
+                    
+                    <button pButton pRipple [label]="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!deleteId || !deleteId.length"></button> 
+                </ng-template>
+        
+                <ng-template pTemplate="right">
+                    <button pButton pRipple label="Add New" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
+                </ng-template>
+            </p-toolbar>
         </ng-template>
         <ng-template pTemplate="header">
             <tr>
@@ -28,11 +38,15 @@
                     <!-- <p-checkbox (click)="selectRow(e.checked)" #e></p-checkbox> -->
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
+
                 <th pSortableColumn="name">Customer Name<p-sortIcon field="custdata.name"></p-sortIcon></th>
                 <th pSortableColumn="createdOn">Created On <p-sortIcon field="createdOn"></p-sortIcon></th>
                 <th pSortableColumn="invoiceno">Invoice No <p-sortIcon field="invoiceno"></p-sortIcon></th>
-                <th pSortableColumn="totalamount">Total Amount <p-sortIcon field="totalamount"></p-sortIcon></th>
                 
+                <th>Payment Link</th>
+                <th>Status</th>
+                <th>Amount Received</th>
+                <th pSortableColumn="totalamount">Total Amount <p-sortIcon field="totalamount"></p-sortIcon></th>
                 <th>Action</th>
             </tr>
         </ng-template>
@@ -51,10 +65,15 @@
                 <td>
                     {{product.invoiceno}}
                 </td>
+                
+                <td> <a href="{{product.paymentDetail.link_url}}" target="_blank">Payment Link</a>  </td>
+                <td> <p-tag value="{{product.paymentDetail.link_status}}" (click)="getPaymentStatus(product.paymentDetail.link_id,product)" severity="warning" icon="pi pi-refresh pi-spin"></p-tag></td>
+                <!-- {{getPaymentStatus(product.paymentDetail.link_id)}} -->
+                <td> {{product.paymentDetail.link_amount_paid}} </td>
                 <td>{{product.totalamount}}</td>
-                <td>
+                <td> 
                      
-                    <button pButton pRipple icon="pi pi-download" class="p-button-rounded p-button-help p-mr-2" (click)="downloadPdf(product)"></button>
+                    <button pButton pRipple icon="pi pi-download" class="p-button-rounded p-button-help p-mr-2" (click)="getReadPdf(product)"></button>
                     <button pButton pRipple icon="pi pi-file-pdf" class="p-button-rounded p-button-danger p-mr-2" (click)="getPdf(product)"></button>
                     <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editInvoice(product)"></button>
                     <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteInvoice(product)"></button>
@@ -67,6 +86,11 @@
             </div>
         </ng-template>
     </p-table>
+    
+   
+        <div class="dropin-parent" id="drop_in_container">
+     
+        </div>
 </div>
 
 <p-dialog [(visible)]="invoiceDialog"  [breakpoints]="{'960px': '75vw', '640px': '100vw'}" [style]="{width: '50vw'}" header="Invoice Details" [modal]="true" styleClass="p-fluid">
@@ -85,8 +109,59 @@
 
             <!-- <p-dropdown [options]="custArray" placeholder="Select Customer" formControlName="customerId" optionLabel="name" optionValue="id"></p-dropdown> -->
         </div>
+        
         <div class="p-fluid p-form-grid grid">
-            <div class="p-field col-12 md:col-6">
+            <div class="p-field md:col-12 lg:col-6">
+                   <span>Select Payment Type</span>
+                   </div>
+                   <div class="p-field md:col-12 lg:col-6">
+                       <span>
+                        <p-dropdown [options]="paymentArray" placeholder="Select Payment Method" formControlName="paymentType" optionLabel="name" optionValue="value"></p-dropdown>
+                       </span> 
+                   </div>
+
+
+                   <div class="p-field md:col-12 lg:col-6" *ngIf="invoiceGroup.get('paymentType').value == 2">
+                    <span>Select Payment Gateway Method</span>
+                    </div>
+                   <div class="p-field md:col-12 lg:col-6" *ngIf="invoiceGroup.get('paymentType').value == 2">
+                    <span>
+                        <p-multiSelect [options]="typesmethod" formControlName="methodtype" defaultLabel="Select a Method type" optionLabel="name" optionValue="value" display="chip"></p-multiSelect>
+                    </span> 
+                </div>
+                   
+                   <div class="p-field md:col-12 lg:col-6">
+                    <input type="text" #code (input)="code.value = code.value.toUpperCase()" pInputText placeholder="Select Currency" formControlName="link_currency">
+                   </div>
+                   <div class="p-field md:col-12 lg:col-6">
+                    <input type="text" pInputText placeholder="Select Purpose" formControlName="link_purpose">
+                   </div>
+                   <div class="p-field field-checkbox md:col-12 lg:col-6"  *ngIf="invoiceGroup.get('paymentType').value == 1">
+                    <label for="date">Do you want partial payment</label> <br>
+                    <p-radioButton name="link_partial_payments" [value]="true" label="Yes" formControlName="link_partial_payments"></p-radioButton>
+                    <p-radioButton name="link_partial_payments" [value]="false" label="No" formControlName="link_partial_payments"></p-radioButton>
+                    
+                   </div>
+
+                   <div class="p-field field-checkbox md:col-12 lg:col-6"  *ngIf="invoiceGroup.get('paymentType').value == 1">
+                    <input type="number" pInputText placeholder="Enter Minimum Amount" formControlName="link_minimum_partial_amount">
+                   </div>
+
+                   <div  class="flex justify-content-around align-items-center w-full" formGroupName="link_notify" *ngIf="invoiceGroup.get('paymentType').value == 1">
+                    <div class="p-field md:col-12 lg:col-6 text-center">
+                        <label for="date">Send SMS</label> <br>
+                        <p-radioButton class="mr-2" name="send_sms" [value]="true" label="Yes" formControlName="send_sms"></p-radioButton>
+                        <p-radioButton name="send_sms" [value]="false" label="No" formControlName="send_sms"></p-radioButton>
+                        
+                    </div>
+                    <div class="p-field md:col-12 lg:col-6 text-center">
+                        <label for="date">Send EMAIL</label> <br>
+                        <p-radioButton class="mr-2" name="send_email" [value]="true" label="Yes" formControlName="send_email"></p-radioButton>
+                        <p-radioButton name="send_email" [value]="false" label="No" formControlName="send_email"></p-radioButton>
+                        
+                    </div>
+                </div>
+            <div class="p-field col-12 md:col-6 lg:col-6">
                 <label for="date">Invoice Date</label>
                 <p-calendar appendTo="body" [touchUI]="true" [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" formControlName="invoicedate" dateFormat="dd.mm.yy"></p-calendar>
                 
@@ -114,7 +189,9 @@
                 <div [formGroupName]="i">
                     <div class="flex justify-content-around align-items-center mb-4">
                         <div>
-                            <p-dropdown [options]="itemArr" placeholder="Select Item" formControlName="invoice_itemId" optionLabel="name" optionValue="id"></p-dropdown>
+                            <span style="width: 100%">
+                            <p-dropdown [style]="{'minWidth':'100%'}" [options]="itemArr" placeholder="Select Item" formControlName="invoice_itemId" optionLabel="name" optionValue="id"></p-dropdown>
+                       </span>
                         </div>
                         <div>
                             <input type="number" pInputText placeholder="Quantity" formControlName="quantity">

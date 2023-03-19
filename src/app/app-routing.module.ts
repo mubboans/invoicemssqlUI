@@ -2,7 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  {path:'',redirectTo:'about',pathMatch:'full'}
+  // {
+  //   path:'common',loadChildren:()=>import('./pages/pages.module').then(m=>m.PagesModule)
+
+  // },
+  {
+    path:'',pathMatch:'full',redirectTo:'about'
+  }
 ];
 
 @NgModule({

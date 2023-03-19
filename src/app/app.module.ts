@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ShareModule } from './share_module/share/share.module';
 import { NavheaderComponent } from './common-component/navheader/navheader.component';
 import { PagesModule } from './pages/pages.module';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 
 
@@ -24,7 +25,13 @@ import { PagesModule } from './pages/pages.module';
     PagesModule,
     FormsModule, ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

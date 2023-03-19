@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng-lts/api';
 import { Customer } from 'src/app/model/customer';
@@ -21,7 +21,7 @@ export class CustomerComponent implements OnInit {
       _id:fb.control(''),
       name:fb.control('',Validators.required),
       email:fb.control('',Validators.required),
-      contact:fb.control('',Validators.required),
+      contact:fb.control('',[Validators.required, this.noWhitespaceValidator]),
       __v:fb.control(''),
       address:fb.group({
         line1:fb.control('',Validators.required),
@@ -40,7 +40,12 @@ export class CustomerComponent implements OnInit {
   addCustomer(){
     this.submitted = false;
     this.customerDialog= true;
+    this.customerForm.reset({})
   }
+  noWhitespaceValidator(control: FormControl) {
+    const isSpace = (control.value || '').match(/\s/g);
+    return isSpace ? {'whitespace': true} : null;
+}
   getCustomer(){
     this.customerSer.getCustomer().subscribe((x:any)=>{
       this.customerArray = x.data
@@ -50,6 +55,7 @@ export class CustomerComponent implements OnInit {
   editCutomer(customer){
     this.submitted = true;
     this.customerDialog = true;
+    // custome
     this.customerForm.patchValue({name:customer.name,
     _id:customer._id,
     email:customer.email,
@@ -57,7 +63,7 @@ export class CustomerComponent implements OnInit {
     address:customer.address,
     __v:customer.__v
     })
-    console.log(customer);
+    console.log(this.customerForm.valid);
     
   }
   deleteCustomer(customer){
@@ -77,6 +83,31 @@ export class CustomerComponent implements OnInit {
   });
 
   }
+  onUpload(event,fileUpload) {
+    console.log('call event');
+    let File = event.files[0];
+    if(File){
+      let formData = new FormData();
+      formData.append('customercsv',File)
+     this.customerSer.uploadCustomerCSV(formData).subscribe((x:any)=>{
+      console.log(x,'response');
+      
+      if(x.success){
+        this.messageService.add({severity: 'info', summary: x.message, detail: 'Save Data'});
+        this.getCustomer(); 
+      }
+      // else{
+       
+      // }
+     },(err:any)=>{
+      this.messageService.add({severity: 'error', summary: err, detail: 'Failed to Save Data is Missing'});
+     }
+     )
+    }
+    fileUpload.clear();
+    console.log(File);
+    
+}
 fnSubmit(){
   this.submitted = true;
   let id=this.customerForm.get('_id').value
@@ -87,7 +118,7 @@ fnSubmit(){
     contact:this.customerForm.get('contact').value,
     address:this.customerForm.get('address').value,
   }
-  if (this.customerForm.valid && (this.submitted && id !== '') ) {
+  if (this.customerForm.valid && (this.submitted && (id !== '' && id != null)) ) {
     // console.log(event.target.value,event);
     
     this.customerSer.updateCuctomerbyID(id,this.customerForm.value).subscribe((x:any)=>{

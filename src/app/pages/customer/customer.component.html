@@ -4,7 +4,11 @@
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between">
                     <span>Total Customer</span> 
-                    <p-button icon="pi pi-plus" (click)="addCustomer()" label="Add New"></p-button>
+                    <div style="display:flex; align-items: center;justify-content: center;">
+                        <p-fileUpload style="margin-right:5px;" styleClass="p-mr-2" customUpload="true" #fileUpload mode="basic" name="demo[]" accept=".csv" maxFileSize="1000000" (onSelect)="onUpload($event,fileUpload)" [auto]="true" chooseLabel="Upload CSV"></p-fileUpload>
+        <p-button icon="pi pi-plus" (click)="addCustomer()" label="Add New"></p-button>
+                    </div>
+                    
                 </div>
                 </ng-template>
             <ng-template pTemplate="header">
@@ -109,7 +113,7 @@
                                 <i class="pi pi-spin pi-plus-circle" style="font-size: 1.2rem"></i>
                                 <span class="ml-2 font-bold">Submit</span>
                             </p-button>  -->
-                            <button pButton pRipple label="Save" icon="pi pi-check" [disabled]="customerForm.invalid" class="p-button-warning p-button-outlined" type="submit"></button>
+                            <button pButton pRipple label="Save" icon="pi pi-check"  [disabled]="customerForm.invalid" class="p-button-warning p-button-outlined" type="submit"></button>
                         </div>
                     </div>
                 </div>

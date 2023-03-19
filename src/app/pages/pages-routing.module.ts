@@ -13,7 +13,8 @@ const routes: Routes = [
   {path:'invoice',component:InvoiceComponent},
   {path:'about',component:AboutComponent},
   {path:'dashboard',component:DashboardComponent},
-  {path:'**',component:PagenotfoundComponent}
+  {path:'**',component:PagenotfoundComponent},  
+  {path:'',redirectTo:'about',pathMatch:'full'}
 ];
 
 @NgModule({

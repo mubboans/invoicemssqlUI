@@ -1,9 +1,14 @@
 @import '../../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 :host::ng-deep{
+    .p-dropdown {
+        width: 255px !important;
+        height: 100% !important;
+    }
     .p-fluid {
-        .p-button {
-            width: none !important;
-        }
+      
+          .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+            white-space: inherit;
+          }
     }
     .p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
         display: none;
@@ -52,3 +57,14 @@
         }
     }
 }
+.dropin-parent{
+    width: 420px;
+    max-width:420px;
+    margin: auto;
+    margin-top:20px;
+    position: absolute;
+    top: 0;
+    margin-top: 20px;
+    left: 30%;
+    right: 30%;
+  }
