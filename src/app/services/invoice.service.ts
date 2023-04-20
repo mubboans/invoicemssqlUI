@@ -12,7 +12,7 @@ export class InvoiceService {
   constructor(public http:HttpClient) { }
 
 getInvoice():Observable<any>{
-  return this.http.get<any>(environment.serverUrl + "invoice").pipe(
+  return this.http.get<any>(environment.serverUrl + "invoice/get/all/invoice").pipe(
     map(x=>{
       return x;
     }),
@@ -29,15 +29,15 @@ getInvoicebyNO(no):Observable<any>{
   )
 }
 updateInvoice(id, data):Observable<any>{
-  return this.http.put<any>(`${environment.serverUrl}invoice:${id}`,data).pipe(
+  return this.http.put<any>(`${environment.serverUrl}invoice/update/invoice?id=${id}`,data).pipe(
     map(x=>{
       return x;
     }),
     catchError(this.handleError)
   )
 }
-deleteInvoice(id):Observable<any>{
-  return this.http.delete<any>(`${environment.serverUrl}invoice:${id}`).pipe(
+deleteInvoice(id):Observable<any>{ 
+  return this.http.delete<any>(`${environment.serverUrl}invoice/delete:${id}`).pipe(
     map(x=>{
       return x;
     }),
@@ -45,7 +45,7 @@ deleteInvoice(id):Observable<any>{
   )
 }
 postInvoice(data):Observable<any>{
-  return this.http.post<any>(`${environment.serverUrl}invoice`,data).pipe(
+  return this.http.post<any>(`${environment.serverUrl}invoice/create`,data).pipe(
     map(x=>{
       return x;
     }),
@@ -56,7 +56,7 @@ deleteSelectedInvoice(id):Observable<any>{
 let data={
   ids:id
 }
-  return this.http.post(`${environment.serverUrl}invoice/delete`,data).pipe(map(x=>{
+  return this.http.post(`${environment.serverUrl}invoice/bulkdel`,data).pipe(map(x=>{
     return x
   }),catchError(this.handleError)
   )
@@ -74,11 +74,16 @@ getInvoicePdfbyNo(no):Observable<any>{
   )
 } 
 getInvoiceReadablePDF(no):Observable<any>{
-  return this.http.get(`${environment.serverUrl}invoice/${no}/pdf`,{responseType:'blob'}).pipe(
+  return this.http.get(`${environment.serverUrl}invoice/get/invoicePdf:${no}`,{responseType:'blob'}).pipe(
     map(x=>{
       return x
     }),catchError(this.handleError)
   )
+}
+updateStatusAfterPayment(orderid, data) {
+  return this.http.put(`${environment.serverUrl}invoice/update/details:${orderid}`, data).pipe(map(x => {
+    return x;
+  }), catchError(this.handleError))
 }
   handleError(httperror?:HttpErrorResponse){
     return throwError(httperror.message || "Error In Message")

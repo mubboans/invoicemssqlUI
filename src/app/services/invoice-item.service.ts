@@ -12,7 +12,7 @@ export class InvoiceItemService {
   constructor(public http:HttpClient) { }
 
   getInvoiceItem():Observable<any>{
-    return this.http.get<any>(environment.serverUrl + 'invoice_item').pipe(
+    return this.http.get<any>(environment.serverUrl + 'invoice/item/all').pipe(
       map(x=>{
         return x;
       }),
@@ -20,7 +20,7 @@ export class InvoiceItemService {
     )
   }
   updateInvoiceItem(id,data){
-    return this.http.put<any>(`${environment.serverUrl}invoice_item:${id}`,data).pipe(
+    return this.http.patch<any>(`${environment.serverUrl}invoice/update/item:${id}`,data).pipe(
       map(x=>{
         return x
       }),
@@ -29,7 +29,7 @@ export class InvoiceItemService {
   }
 
   deleteInvoiceItem(id){
-    return this.http.delete<any>(`${environment.serverUrl}invoice_item:${id}`).pipe(
+    return this.http.delete<any>(`${environment.serverUrl}invoice/delete/item:${id}`).pipe(
       map(x=>{
         return x
       }),
@@ -37,7 +37,7 @@ export class InvoiceItemService {
     )
   }
   postInvoiceItem(data){
-    return this.http.post<any>(`${environment.serverUrl}invoice_item`,data).pipe(
+    return this.http.post<any>(`${environment.serverUrl}invoice/item/create`,data).pipe(
       map(x=>{
         return x
       }),

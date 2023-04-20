@@ -39,10 +39,10 @@
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
 
-                <th pSortableColumn="name">Customer Name<p-sortIcon field="custdata.name"></p-sortIcon></th>
-                <th pSortableColumn="createdOn">Created On <p-sortIcon field="createdOn"></p-sortIcon></th>
+                <th pSortableColumn="name">Customer Name<p-sortIcon field="Users.firstName"></p-sortIcon></th>
+                <th pSortableColumn="createdOn">Customer Contact<p-sortIcon field="createdOn"></p-sortIcon></th>
                 <th pSortableColumn="invoiceno">Invoice No <p-sortIcon field="invoiceno"></p-sortIcon></th>
-                
+                <th>Payment Type</th>
                 <th>Payment Link</th>
                 <th>Status</th>
                 <th>Amount Received</th>
@@ -56,26 +56,28 @@
                     <p-tableCheckbox [value]="product"></p-tableCheckbox>
                 </td>
                 <td>
-                    <span *ngIf="product.custdata"> {{product.custdata.name}}</span>
-                    <span *ngIf="!product.custdata">-</span>   
+                    <span *ngIf="product.Users"> {{product.Users.firstName | uppercase}}</span>
+                    <span *ngIf="!product.Users">-</span>   
                 </td>
                 <td>
-                    {{product.createdOn | date: 'dd/MM/yyyy'}}
+                    {{product.Users.contact}}
                 </td>
                 <td>
                     {{product.invoiceno}}
                 </td>
-                
-                <td> <a href="{{product.paymentDetail.link_url}}" target="_blank">Payment Link</a>  </td>
-                <td> <p-tag value="{{product.paymentDetail.link_status}}" (click)="getPaymentStatus(product.paymentDetail.link_id,product)" severity="warning" icon="pi pi-refresh pi-spin"></p-tag></td>
+                <td>{{product.paymentType == 1 ? 'Payment Link' : 'Payment Gateway'}} </td>
+                <td> <a href="{{product.payDetail.link_url}}" target="_blank">Payment Link</a>  </td>
+                <td> <p-tag value="{{product.payDetail.link_status}}" (click)="getPaymentStatus(product.payDetail.link_id)" severity="warning" icon="pi pi-refresh pi-spin"></p-tag></td>
                 <!-- {{getPaymentStatus(product.paymentDetail.link_id)}} -->
-                <td> {{product.paymentDetail.link_amount_paid}} </td>
+                <td> <span *ngIf="product.payDetail.link_amount_paid"><span> {{product.payDetail.link_amount_paid}} </span> </span>
+                    <span *ngIf="!product.payDetail.link_amount_paid">-</span>
+                 </td>
                 <td>{{product.totalamount}}</td>
                 <td> 
                      
-                    <button pButton pRipple icon="pi pi-download" class="p-button-rounded p-button-help p-mr-2" (click)="getReadPdf(product)"></button>
-                    <button pButton pRipple icon="pi pi-file-pdf" class="p-button-rounded p-button-danger p-mr-2" (click)="getPdf(product)"></button>
-                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editInvoice(product)"></button>
+                    <!-- <button pButton pRipple icon="pi pi-download" class="p-button-rounded p-button-help p-mr-2" (click)="getReadPdf(product)"></button> -->
+                    <button pButton pRipple icon="pi pi-file-pdf" class="p-button-rounded p-button-danger mr-1" (click)="getReadPdf(product)"></button>
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-1" (click)="editInvoice(product)"></button>
                     <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteInvoice(product)"></button>
                 </td>
             </tr>
@@ -93,12 +95,19 @@
         </div>
 </div>
 
-<p-dialog [(visible)]="invoiceDialog"  [breakpoints]="{'960px': '75vw', '640px': '100vw'}" [style]="{width: '50vw'}" header="Invoice Details" [modal]="true" styleClass="p-fluid">
+<p-dialog [(visible)]="invoiceDialog"  [breakpoints]="{'960px': '75vw', '640px': '100vw'}" [style]="{width: '50vw'}" [modal]="true" styleClass="p-fluid">
+   
+   <ng-template pTemplate="header"> 
+    <h4 class="text-center">
+         <span *ngIf="!showHeader">Invoice Details</span>
+         <span *ngIf="showHeader"> Only Name and Date can be changed</span> 
+    </h4>
+   </ng-template>
     <form [formGroup]="invoiceGroup">
     
         <div class="p-field mb-4 mt-2">
             <label for="name" class="mb-2">Customare Name</label>
-            <p-autoComplete placeholder="Select Customer" formControlName="customerId" [suggestions]="filteredData"
+            <p-autoComplete placeholder="Select Customer" formControlName="customer_id" [suggestions]="filteredData"
   (completeMethod)="filterCountry($event)" field="name">
   <ng-template let-country pTemplate="item">
     <div class="country-item">
@@ -134,7 +143,7 @@
                     <input type="text" #code (input)="code.value = code.value.toUpperCase()" pInputText placeholder="Select Currency" formControlName="link_currency">
                    </div>
                    <div class="p-field md:col-12 lg:col-6">
-                    <input type="text" pInputText placeholder="Select Purpose" formControlName="link_purpose">
+                    <input type="text" pInputText placeholder="Select Purpose" formControlName="link_purpose" value="invoice">
                    </div>
                    <div class="p-field field-checkbox md:col-12 lg:col-6"  *ngIf="invoiceGroup.get('paymentType').value == 1">
                     <label for="date">Do you want partial payment</label> <br>
@@ -190,7 +199,7 @@
                     <div class="flex justify-content-around align-items-center mb-4">
                         <div>
                             <span style="width: 100%">
-                            <p-dropdown [style]="{'minWidth':'100%'}" [options]="itemArr" placeholder="Select Item" formControlName="invoice_itemId" optionLabel="name" optionValue="id"></p-dropdown>
+                            <p-dropdown [style]="{'minWidth':'100%'}" [options]="itemArr" placeholder="Select Item" formControlName="item_id"  optionLabel="name" optionValue="id"></p-dropdown>
                        </span>
                         </div>
                         <div>

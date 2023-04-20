@@ -64,13 +64,13 @@
         <ng-template let-product pTemplate="item">
             <div class="product-item">
                 <div class="product-list-detail">
-                    <h2 class="mb-2">{{product.name}}</h2>
+                    <h2 class="mb-2">{{product.itemname}}</h2>
                     <i class="pi pi-tag product-category-icon"></i>
                     <span class="product-category">{{product.category}}</span>
                 </div>
                 <div class="product-list-detail">
                     <h4 class="mb-2">₹{{product.itemprice}}</h4>
-                    <span [class]="'product-badge status-' + product.inventoryStatus.toLowerCase()">{{product.inventoryStatus}}</span>
+                    <span [class]="'product-badge status-' + product.status.toLowerCase()">{{product.status}}</span>
                </div>
 
                 <div class="flex justify-content-between align-items-center">
@@ -81,7 +81,7 @@
             </div>
         </ng-template>
     </p-orderList>
-
+    <!-- {"itemname":"wires","itemprice":100,"category":"wires","status":"inactive"} -->
     <p-dialog [(visible)]="itemDialog" [style]="{width: '450px'}" header="Invoice Item Details" [modal]="true" styleClass="p-fluid">
        
         <form #itemform="ngForm" class="form" (ngSubmit)="fnSubmit()">
@@ -90,7 +90,7 @@
                 <div class="col-12 md:col-8 m-auto">
                     <div class="p-inputgroup">
                         <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
-                        <input name="name" type="text" pInputText [(ngModel)]="invoiceItemObject.name" placeholder="Item Name">         
+                        <input name="name" type="text" pInputText [(ngModel)]="invoiceItemObject.itemname" placeholder="Item Name">         
                     </div>
                 </div>
 
@@ -111,7 +111,7 @@
                 <div class="col-12 md:col-8 m-auto">
                     <div class="p-inputgroup">
                         <span class="p-inputgroup-addon"><i class="pi pi-mobile"></i></span>
-                        <input  name="status" type="text" pInputText [(ngModel)]="invoiceItemObject.inventoryStatus" placeholder="Inventory Status">         
+                        <input  name="status" type="text" pInputText [(ngModel)]="invoiceItemObject.status" placeholder="Inventory Status">         
                     </div>
                 </div>
                 

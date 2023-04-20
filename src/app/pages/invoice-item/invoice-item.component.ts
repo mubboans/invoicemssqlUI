@@ -50,9 +50,9 @@ export class InvoiceItemComponent implements OnInit {
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.invoiceitem.deleteInvoiceItem(product._id).subscribe((x:any)=>{
-          if(x.succes){
-            this.messageService.add({severity:'danger', summary: 'Successful', detail: 'Customer Deleted', life: 3000});
+        this.invoiceitem.deleteInvoiceItem(product.id).subscribe((x:any)=>{
+          if(x.success){
+            this.messageService.add({severity:'error', summary: 'Successful', detail: 'Customer Deleted', life: 3000});
             this.getItem();
           }
         })
@@ -69,9 +69,9 @@ export class InvoiceItemComponent implements OnInit {
   }
   fnSubmit(){
     
-      if (this.invoiceItemObject._id) {
-          this.invoiceitem.updateInvoiceItem(this.invoiceItemObject._id,this.invoiceItemObject).subscribe((x:any)=>{
-            if(x.succes){
+      if (this.invoiceItemObject.id) {
+          this.invoiceitem.updateInvoiceItem(this.invoiceItemObject.id,this.invoiceItemObject).subscribe((x:any)=>{
+            if(x.success){
               this.messageService.add({severity:'info', summary: 'Successful', detail: 'Item Updated', life: 3000});
               this.getItem();
             }
@@ -80,7 +80,7 @@ export class InvoiceItemComponent implements OnInit {
       }
       else {
      this.invoiceitem.postInvoiceItem(this.invoiceItemObject).subscribe((x:any)=>{
-      if(x.succes){
+      if(x.success){
         this.messageService.add({severity:'success', summary: 'Successful', detail: 'Added Invoice-Item Succesfull', life: 3000});
         this.getItem();
       }

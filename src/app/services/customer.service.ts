@@ -11,7 +11,7 @@ export class CustomerService {
 
   constructor(public http:HttpClient) { }
   postCustomer(data):Observable<any>{
-    return this.http.post<any>(`${environment.serverUrl}customer`,data).pipe(
+    return this.http.post<any>(`${environment.serverUrl}users/createUser`,data).pipe(
       map(x=>{
         return x;
       }),catchError(this.handleError)
@@ -19,7 +19,7 @@ export class CustomerService {
   }
 
   getCustomer():Observable<any>{
-    return this.http.get<any>(`${environment.serverUrl}customer`).pipe(
+    return this.http.get<any>(`${environment.serverUrl}users/allUser`).pipe(
       map((x)=>{
         return x;
       }),catchError(this.handleError)
@@ -35,7 +35,7 @@ export class CustomerService {
   }
 
   updateCuctomerbyID(id,data):Observable<any>{
-    return this.http.put(`${environment.serverUrl}customer:${id}`,data).pipe(
+    return this.http.put(`${environment.serverUrl}users/updateUser:${id}`,data).pipe(
       map((x)=>{
         return x;
       })
@@ -52,7 +52,7 @@ export class CustomerService {
    }
 
   deletCustomerbyId(id):Observable<any>{
-    return this.http.delete<any>(`${environment.serverUrl}customer:${id}`).pipe(
+    return this.http.delete<any>(`${environment.serverUrl}users/deleteUser:${id}`).pipe(
       map((x)=>{
         return x
       })

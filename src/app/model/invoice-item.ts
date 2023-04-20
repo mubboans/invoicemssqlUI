@@ -1,8 +1,7 @@
 export interface InvoiceItem {
-    _id?:string;
-    itemno?:number; 
-    name?:string;
+    id?:string;
+    itemname?:string;
     itemprice?:string;
     category?:string;
-    inventoryStatus?:string;
+    status?:string;
 }

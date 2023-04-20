@@ -5,7 +5,7 @@
                 <div class="flex align-items-center justify-content-between">
                     <span>Total Customer</span> 
                     <div style="display:flex; align-items: center;justify-content: center;">
-                        <p-fileUpload style="margin-right:5px;" styleClass="p-mr-2" customUpload="true" #fileUpload mode="basic" name="demo[]" accept=".csv" maxFileSize="1000000" (onSelect)="onUpload($event,fileUpload)" [auto]="true" chooseLabel="Upload CSV"></p-fileUpload>
+                        <p-fileUpload styleClass="mr-2" customUpload="true" #fileUpload mode="basic" name="demo[]" accept=".csv" maxFileSize="1000000" (onSelect)="onUpload($event,fileUpload)" [auto]="true" chooseLabel="Upload CSV"></p-fileUpload>
         <p-button icon="pi pi-plus" (click)="addCustomer()" label="Add New"></p-button>
                     </div>
                     
@@ -24,12 +24,12 @@
             </ng-template>
             <ng-template pTemplate="body" let-cutomer>
                 <tr>
-                    <td>{{cutomer.name | uppercase}}</td>
+                    <td>{{cutomer.firstName | uppercase}}</td>
                     <td>{{cutomer.email }}</td>
                     <td>{{cutomer.contact}}</td>
-                    <td>{{cutomer.address.country}}</td>
-                    <td>{{cutomer.address.city}}</td>
-                    <td>{{cutomer.address.pincode}}</td>
+                    <td>{{cutomer.country}}</td>
+                    <td>{{cutomer.city}}</td>
+                    <td>{{cutomer.pincode}}</td>
                     <td>
                         <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editCutomer(cutomer)"></button>
                         <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteCustomer(cutomer)"></button>
@@ -46,7 +46,13 @@
                     <div class="col-12 md:col-8 m-auto">
                         <div class="p-inputgroup">
                             <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
-                            <input type="text" pInputText formControlName="name" placeholder="Customer Name">         
+                            <input type="text" pInputText formControlName="firstName" placeholder="First Name">         
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-8 m-auto">
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+                            <input type="text" pInputText formControlName="lastName" placeholder="Last Name">         
                         </div>
                     </div>
     
@@ -68,17 +74,17 @@
     
     
     
-                <div class="col-12 md:col-10 m-auto" formGroupName="address">
+                <!-- <div class="col-12 md:col-10 m-auto" formGroupName="address"> -->
                     <div class="col-12 md:col-8 m-auto">
                         <div class="p-inputgroup">
                             <span class="p-inputgroup-addon"><i class="pi pi-home"></i></span>
-                            <input type="text" pInputText formControlName="line1" placeholder="Line 1">         
+                            <input type="text" pInputText formControlName="addressLine1" placeholder="Line 1">         
                         </div>
                     </div>
                     <div class="col-12 md:col-8 m-auto">
                         <div class="p-inputgroup">
                             <span class="p-inputgroup-addon"><i class="pi pi-home"></i></span>
-                            <input type="text" pInputText formControlName="line2" placeholder="Line 2">         
+                            <input type="text" pInputText formControlName="addressLine2" placeholder="Line 2">         
                         </div>
                     </div>
                     <div class="col-12 md:col-8 m-auto">
@@ -106,8 +112,8 @@
                         </div>
                     </div>
                    
-                    </div>
-                    <div class="col-12 md:col-3 m-auto">
+                    <!-- </div> -->
+                    <div class="col-12 md:col-4 m-auto">
                         <div class="p-inputgroup">
                             <!-- <p-button (click)="fnSubmit(customerForm.value)" [disabled]="customerForm.invalid" styleClass="p-button-outlined">
                                 <i class="pi pi-spin pi-plus-circle" style="font-size: 1.2rem"></i>

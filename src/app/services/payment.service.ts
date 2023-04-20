@@ -11,14 +11,14 @@ export class PaymentService {
 
   constructor(public http:HttpClient) { }
   updateStatus(id,data):Observable<any>{
-    return this.http.patch(`${environment.serverUrl}invoice/payment/update:${id}`,data).pipe(
+    return this.http.put(`${environment.serverUrl}invoice/update/payment:${id}`,data).pipe(
       map(x=>{
         return x;
       }),catchError(this.handleError)
     )
   }
   getPaymentStatus(id):Observable<any>{
-    return this.http.get<any>(`${environment.serverUrl}invoice/payment/status:${id}`).pipe(
+    return this.http.get<any>(`${environment.serverUrl}invoice/payment/linkstatus:${id}`).pipe(
       map(x=>{
         return x;
       }),catchError(this.handleError)
